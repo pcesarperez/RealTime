@@ -17,7 +17,7 @@ namespace com.adastrafork.tools.realtime.tests {
 			var realTime = new RealTime ( );
 
 			try {
-				Console.WriteLine ($"Current UTC time from the default server {realTime.NtpServer} is: {realTime.GetRealTime ( ).Result}.");
+				Console.WriteLine ($"Current UTC time from the default server {realTime.NtpServer} is: {realTime.Now}.");
 			} catch (Exception e) {
 				Assert.Fail ($"The operation has failed with the following message: {e.Message}");
 			}
@@ -32,7 +32,7 @@ namespace com.adastrafork.tools.realtime.tests {
 			var realTime = new RealTime ("time.windows.com");
 
 			try {
-				Console.WriteLine ($"Current UTC time from {realTime.NtpServer} is: {realTime.GetRealTime ( ).Result}.");
+				Console.WriteLine ($"Current UTC time from {realTime.NtpServer} is: {realTime.Now}.");
 			} catch (Exception e) {
 				Assert.Fail ($"The operation has failed with the following message: {e.Message}");
 			}

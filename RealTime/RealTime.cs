@@ -41,13 +41,22 @@ namespace com.adastrafork.tools.realtime {
 
 
 		/// <summary>
-		/// Gets the UTC real time from the NTP server specified in setup time.
+		/// Gets the UTC real time from the NTP server specified in the setup.
+		/// </summary>
+		public DateTime Now => GetRealTime ( ).Result;
+
+		#endregion
+
+
+		#region Private members.
+		/// <summary>
+		/// Tries to get the UTC real time from the NTP server specified in the setup.
 		/// </summary>
 		/// 
 		/// <see cref="https://github.com/HansHinnekint/EncryptionLib/blob/master/EncryptionLibrary/DateTimeGenerator.cs"/>
 		/// 
 		/// <returns>Date and time in Coordinated Universal Time obtained from the NTP server specified in setup time.</returns>
-		public async Task<DateTime> GetRealTime ( ) {
+		private async Task<DateTime> GetRealTime ( ) {
 			var ntpData = GetNtpData ( );
 
 			try {
@@ -72,10 +81,6 @@ namespace com.adastrafork.tools.realtime {
 			}
 		}
 
-		#endregion
-
-
-		#region Private members.
 
 		/// <summary>
 		/// Sets up the NTP data array used to send data to/receive data from the server.
