@@ -4,11 +4,12 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 
 
-namespace com.adastrafork.tools.RealTime {
+namespace com.adastrafork.tools.realtime {
 	/// <summary>
 	/// Real time management using a NTP server.
 	/// </summary>
 	public sealed class RealTime {
+		private const string DEFAULT_NTP_SERVER = "pool.ntp.org";
 		private const int UDP_PORT = 123;
 		private const int TIMEOUT_MS = 3000;
 
@@ -16,7 +17,15 @@ namespace com.adastrafork.tools.RealTime {
 		#region Public members.
 
 		/// <summary>
-		/// Sets up the real time manager.
+		/// Sets up the real time manager using the default NTP server (pool.ntp.org).
+		/// </summary>
+		public RealTime ( ) {
+			NtpServer = DEFAULT_NTP_SERVER;
+		}
+
+
+		/// <summary>
+		/// Sets up the real time manager using a specified NTP server.
 		/// </summary>
 		/// 
 		/// <param name="ntpServer">URI of the NTP server used to get the real time.</param>

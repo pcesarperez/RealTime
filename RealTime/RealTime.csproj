@@ -2,14 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>com.adastrafork.tools.RealTime</RootNamespace>
+    <RootNamespace>com.adastrafork.tools.realtime</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Pablo César Pérez González (adastra)</Authors>
-    <Company>adastrafork.com</Company>
+    <Company>Adastra/fork</Company>
     <PackageLicenseUrl>https://creativecommons.org/licenses/by-sa/4.0/</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/pcesarperez/RealTime</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
-    <PackageTags>Library Time NTP Tool</PackageTags>
+    <PackageTags>Library Time UTC NTP Tool</PackageTags>
+    <Description>Library to get the real Coordinated Universal Time from a specified NTP server.</Description>
   </PropertyGroup>
 
 </Project>
