@@ -3,6 +3,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 
+using NodaTime;
+
 
 namespace com.adastrafork.tools.realtime {
 	/// <summary>
@@ -12,6 +14,7 @@ namespace com.adastrafork.tools.realtime {
 		private const string DEFAULT_NTP_SERVER = "pool.ntp.org";
 		private const int UDP_PORT = 123;
 		private const int TIMEOUT_MS = 3000;
+		private const string UTC_TIMEZONE_TZDB_ID = "Etc/UTC";
 
 
 		#region Public members.
@@ -28,35 +31,48 @@ namespace com.adastrafork.tools.realtime {
 		/// Sets up the real time manager using a specified NTP server.
 		/// </summary>
 		/// 
-		/// <param name="ntpServer">URI of the NTP server used to get the real time.</param>
+		/// <param name="ntpServer">Hostname of the NTP server used to get the real time.</param>
 		public RealTime (string ntpServer) {
 			NtpServer = ntpServer;
 		}
 
 
 		/// <summary>
-		/// URI of the NTP server used to get the real time.
+		/// NTP server used to get the real time.
 		/// </summary>
 		public string NtpServer { get; }
 
 
 		/// <summary>
-		/// Gets the UTC real time from the NTP server specified in the setup.
+		/// Gets the UTC date and time from the NTP server specified in the setup.
 		/// </summary>
-		public DateTime Now => GetRealTime ( ).Result;
+		public ZonedDateTime Now => GetRealTime ( ).Result;
+
+
+		/// <summary>
+		/// Gets the date and time from the NTP server specified in the setup, using the system time zone.
+		/// </summary>
+		public ZonedDateTime NowInMyTimeZone => Now.WithZone (DateTimeZoneProviders.Tzdb.GetSystemDefault ( ));
+
+
+		/// <summary>
+		/// Determines if the answer comes from the NTP server (in which case the date and time are considered reliable) or from the local machine.
+		/// </summary>
+		public bool TheAnswerIsReliable { get; private set; }
 
 		#endregion
 
 
 		#region Private members.
+
 		/// <summary>
-		/// Tries to get the UTC real time from the NTP server specified in the setup.
+		/// Tries to get the UTC date and time from the NTP server specified in the setup.
 		/// </summary>
 		/// 
 		/// <see cref="https://github.com/HansHinnekint/EncryptionLib/blob/master/EncryptionLibrary/DateTimeGenerator.cs"/>
 		/// 
 		/// <returns>Date and time in Coordinated Universal Time obtained from the NTP server specified in setup time.</returns>
-		private async Task<DateTime> GetRealTime ( ) {
+		private async Task<ZonedDateTime> GetRealTime ( ) {
 			var ntpData = GetNtpData ( );
 
 			try {
@@ -75,9 +91,13 @@ namespace com.adastrafork.tools.realtime {
 					socket.Close ( );
 				}
 
+				TheAnswerIsReliable = true;
+
 				return ParseRealTime (ntpData);
 			} catch (Exception) {
-				return DateTime.UtcNow;
+				TheAnswerIsReliable = false;
+
+				return new ZonedDateTime (Instant.FromDateTimeUtc (DateTime.UtcNow), DateTimeZoneProviders.Tzdb [UTC_TIMEZONE_TZDB_ID]);
 			}
 		}
 
@@ -125,13 +145,16 @@ namespace com.adastrafork.tools.realtime {
 		/// <param name="ntpData">Data obtained from the NTP server.</param>
 		/// 
 		/// <returns><code>DateTime</code> object with the UTC real time obtained from the NTP server.</returns>
-		private DateTime ParseRealTime (byte [ ] ntpData) {
+		private ZonedDateTime ParseRealTime (byte [ ] ntpData) {
 			ulong intPart = (ulong) ntpData [40] << 24 | (ulong) ntpData [41] << 16 | (ulong) ntpData [42] << 8 | ntpData [43];
 			ulong fractPart = (ulong) ntpData [44] << 24 | (ulong) ntpData [45] << 16 | (ulong) ntpData [46] << 8 | ntpData [47];
 
 			var milliseconds = (intPart * 1000) + ((fractPart * 1000) / 0x100000000L);
 
-			return (new DateTime (1900, 1, 1)).AddMilliseconds ((long) milliseconds);
+			var ntpBaseDateTime = new LocalDateTime (1900, 1, 1, 0, 0, 0);
+			var utcTimeZone = DateTimeZoneProviders.Tzdb [UTC_TIMEZONE_TZDB_ID];
+
+			return utcTimeZone.AtStrictly (ntpBaseDateTime).PlusMilliseconds ((long) milliseconds);
 		}
 
 		#endregion

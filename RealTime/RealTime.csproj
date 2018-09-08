@@ -13,4 +13,8 @@
     <Description>Library to get the real Coordinated Universal Time from a specified NTP server.</Description>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NodaTime" Version="2.4.0" />
+  </ItemGroup>
+
 </Project>
