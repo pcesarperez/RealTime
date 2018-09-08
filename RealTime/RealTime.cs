@@ -37,7 +37,7 @@ namespace com.adastrafork.tools.RealTime {
 		/// 
 		/// <see cref="https://github.com/HansHinnekint/EncryptionLib/blob/master/EncryptionLibrary/DateTimeGenerator.cs"/>
 		/// 
-		/// <returns>Date and time in coordinated universal time obtained from the NTP server specified in setup time.</returns>
+		/// <returns>Date and time in Coordinated Universal Time obtained from the NTP server specified in setup time.</returns>
 		public async Task<DateTime> GetRealTime ( ) {
 			var ntpData = GetNtpData ( );
 
