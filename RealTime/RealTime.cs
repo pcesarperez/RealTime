@@ -10,7 +10,7 @@ namespace com.adastrafork.tools.realtime {
 	/// <summary>
 	/// Real time management using a NTP server.
 	/// </summary>
-	public sealed class RealTime {
+	public class RealTime {
 		private const string DEFAULT_NTP_SERVER = "pool.ntp.org";
 		private const int UDP_PORT = 123;
 		private const int TIMEOUT_MS = 3000;
@@ -20,7 +20,7 @@ namespace com.adastrafork.tools.realtime {
 		#region Public members.
 
 		/// <summary>
-		/// Sets up the real time manager using the default NTP server (pool.ntp.org).
+		/// Sets up the real time manager using the default NTP server.
 		/// </summary>
 		public RealTime ( ) {
 			NtpServer = DEFAULT_NTP_SERVER;
@@ -44,13 +44,13 @@ namespace com.adastrafork.tools.realtime {
 
 
 		/// <summary>
-		/// Gets the UTC date and time from the NTP server specified in the setup.
+		/// UTC date and time from the NTP server specified in the setup.
 		/// </summary>
 		public ZonedDateTime Now => GetRealTime ( ).Result;
 
 
 		/// <summary>
-		/// Gets the date and time from the NTP server specified in the setup, using the system time zone.
+		/// Date and time from the NTP server specified in the setup, using the system time zone.
 		/// </summary>
 		public ZonedDateTime NowInMyTimeZone => Now.WithZone (DateTimeZoneProviders.Tzdb.GetSystemDefault ( ));
 
@@ -71,7 +71,7 @@ namespace com.adastrafork.tools.realtime {
 		/// 
 		/// <see cref="https://github.com/HansHinnekint/EncryptionLib/blob/master/EncryptionLibrary/DateTimeGenerator.cs"/>
 		/// 
-		/// <returns>Date and time in Coordinated Universal Time obtained from the NTP server specified in setup time.</returns>
+		/// <returns>Date and time in Coordinated Universal Time obtained from the NTP server specified in the setup.</returns>
 		private async Task<ZonedDateTime> GetRealTime ( ) {
 			var ntpData = GetNtpData ( );
 
@@ -146,10 +146,10 @@ namespace com.adastrafork.tools.realtime {
 		/// 
 		/// <returns><code>DateTime</code> object with the UTC real time obtained from the NTP server.</returns>
 		private ZonedDateTime ParseRealTime (byte [ ] ntpData) {
-			ulong intPart = (ulong) ntpData [40] << 24 | (ulong) ntpData [41] << 16 | (ulong) ntpData [42] << 8 | ntpData [43];
-			ulong fractPart = (ulong) ntpData [44] << 24 | (ulong) ntpData [45] << 16 | (ulong) ntpData [46] << 8 | ntpData [47];
+			ulong integerPart = ((ulong) ntpData [40] << 24 | (ulong) ntpData [41] << 16 | (ulong) ntpData [42] << 8 | ntpData [43]);
+			ulong fractionalPart = ((ulong) ntpData [44] << 24 | (ulong) ntpData [45] << 16 | (ulong) ntpData [46] << 8 | ntpData [47]);
 
-			var milliseconds = (intPart * 1000) + ((fractPart * 1000) / 0x100000000L);
+			var milliseconds = ((integerPart * 1000) + ((fractionalPart * 1000) / 0x100000000L));
 
 			var ntpBaseDateTime = new LocalDateTime (1900, 1, 1, 0, 0, 0);
 			var utcTimeZone = DateTimeZoneProviders.Tzdb [UTC_TIMEZONE_TZDB_ID];
