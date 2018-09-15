@@ -11,6 +11,7 @@
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>Library Time UTC NTP Tool</PackageTags>
     <Description>Library to get the real Coordinated Universal Time from a specified NTP server.</Description>
+    <PackageId>com.adastrafork.RealTime</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
